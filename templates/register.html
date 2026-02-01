@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Patient Register</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+:root{
+ --neon:#00ffff;
+ --violet:#7b5cff;
+}
+*{box-sizing:border-box}
+body{
+ margin:0;font-family:Poppins;
+ background:radial-gradient(circle at top,#1b1245,#05020c);
+ min-height:100vh;display:flex;justify-content:center;align-items:center;color:white
+}
+.card{
+ width:360px;padding:28px 26px 32px;
+ background:linear-gradient(145deg,#160c38,#080313);
+ border-radius:18px;
+ box-shadow:0 0 30px rgba(0,255,255,.4),inset 0 0 20px rgba(255,255,255,.05);
+ text-align:center
+}
+.logo{
+ width:90px;display:block;margin:0 auto 6px;
+ filter:drop-shadow(0 0 12px var(--neon))
+}
+h2{
+ margin:0 0 18px;color:var(--neon);font-weight:600;
+ text-shadow:0 0 8px rgba(0,255,255,.8)
+}
+input,select{
+ width:100%;padding:12px;margin:10px 0;border-radius:10px;
+ background:#0b0617;border:1px solid rgba(0,255,255,.45);
+ color:white;outline:none
+}
+button{
+ width:100%;padding:13px;margin-top:16px;border:none;border-radius:30px;
+ background:linear-gradient(135deg,var(--neon),var(--violet));
+ font-weight:600;cursor:pointer
+}
+.login{margin-top:18px;font-size:14px;color:#b7b9ff}
+.login a{color:var(--neon);text-decoration:none}
+.message{
+ margin-top:12px;font-size:14px;
+}
+.success{color:#00ffcc}
+.error{color:#ff4d4d}
+</style>
+</head>
+
+<body>
+
+<div class="card">
+ <img src="svm hospital logo.png" class="logo" alt="Hospital Logo">
+ <h2>Patient Register</h2>
+
+ <form id="regForm">
+  <input name="name" placeholder="Full Name" required>
+  <input name="email" type="email" placeholder="Email" required>
+  <input name="age" type="number" placeholder="Age" required>
+
+  <select name="gender" required>
+   <option value="">Gender</option>
+   <option>Male</option>
+   <option>Female</option>
+   <option>Other</option>
+  </select>
+
+  <input name="height" type="number" step="0.1" placeholder="Height (cm)">
+  <input name="weight" type="number" step="0.1" placeholder="Weight (kg)">
+
+  <button type="submit">Create Account</button>
+ </form>
+
+ <div id="msg" class="message"></div>
+
+ <div class="login">
+  Already have an account?
+  <a href="patient_login.html">Login</a>
+ </div>
+</div>
+
+<script>
+const API = "http://127.0.0.1:8000"; // ✅ matches Flask backend port
+
+document.getElementById("regForm").addEventListener("submit",function(e){
+ e.preventDefault();
+
+ const patient = {
+  name: this.name.value.trim(),
+  email: this.email.value.trim(),
+  age: this.age.value,
+  gender: this.gender.value,
+  height: this.height.value,
+  weight: this.weight.value
+ };
+
+ fetch(API+"/patients", {
+   method: "POST",
+   headers: { "Content-Type": "application/json" },
+   body: JSON.stringify(patient)
+ })
+ .then(r => r.json())
+ .then(res => {
+   const msg = document.getElementById("msg");
+   if(res.status === "patient added"){
+     msg.textContent = "✅ Patient registered successfully!";
+     msg.className = "message success";
+     document.getElementById("regForm").reset();
+     setTimeout(()=>{ window.location.href = "patient_login.html"; }, 1500);
+   } else {
+     msg.textContent = "❌ Error: " + res.message;
+     msg.className = "message error";
+   }
+ })
+ .catch(err => {
+   console.error("Error saving patient:", err);
+   const msg = document.getElementById("msg");
+   msg.textContent = "Server error, please try again.";
+   msg.className = "message error";
+ });
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Doctors Dashboard</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="common.css">
+
+<style>
+.header{text-align:center;margin-bottom:25px}
+.header img{width:90px}
+h1{color:var(--primary);margin:5px 0}
+p{color:var(--muted);margin-bottom:30px}
+
+.doctors{max-width:900px;margin:auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:20px}
+.doctor{background:var(--card);padding:20px;border-radius:15px;text-align:center;transition:.3s}
+.doctor:hover{box-shadow:0 0 15px rgba(0,255,255,.6);transform:translateY(-3px)}
+.doctor img{width:120px;height:120px;border-radius:50%;border:2px solid var(--primary)}
+.doctor h3{color:var(--primary)}
+.doctor p{color:var(--muted)}
+.doctor button{margin-top:10px;padding:10px 20px;border:0;border-radius:10px;background:var(--primary);font-weight:600;cursor:pointer}
+
+.modal{
+ display:none;
+ position:fixed;
+ inset:0;
+ background:rgba(0,0,0,.85);
+ align-items:center;
+ justify-content:center;
+ z-index:100;
+}
+
+.box{background:var(--card);padding:25px;border-radius:15px;max-width:400px;width:90%;text-align:center}
+.box h2{color:var(--primary)}
+.box p{color:var(--muted)}
+.box button{width:100%;padding:10px;border:0;border-radius:10px;background:var(--primary);font-weight:600;cursor:pointer}
+</style>
+</head>
+
+<body>
+
+<div class="header">
+ <img src="svm hospital logo.png">
+ <h1>Doctors Dashboard</h1>
+ <p>Book appointment with our doctors</p>
+</div>
+
+<div class="doctors" id="doctors"></div>
+
+<!-- MODAL -->
+<div class="modal" id="modal">
+ <div class="box">
+  <h2>⚠️ Login Required</h2>
+  <p>Please login first to book your appointment.</p>
+  <button onclick="go()">Continue</button>
+ </div>
+</div>
+
+<script>
+const doctors=[
+ ["Dr. John Anderson","Cardiology","img1.jpg"],
+ ["Dr. Emma Wilson","Neurology","img2.jpg"],
+ ["Dr. Michael Roberts","Orthopedics","img3.jpg"],
+ ["Dr. Olivia Johnson","Dermatology","img4.jpg"],
+ ["Dr. William Smith","Pediatrics","img5.jpg"],
+ ["Dr. Sophia Brown","Gynecology","img6.jpg"],
+ ["Dr. James Davis","Oncology","img7.jpg"],
+ ["Dr. Isabella Martinez","Psychiatry","img8.jpg"],
+ ["Dr. Benjamin Lee","Radiology","img9.jpg"],
+ ["Dr. Mia Taylor","Gastroenterology","img10.jpg"]
+]
+
+let selectedDoctor=""
+const box=document.getElementById("doctors")
+
+doctors.forEach(d=>{
+ box.innerHTML+=`
+ <div class="doctor">
+  <img src="${d[2]}">
+  <h3>${d[0]}</h3>
+  <p>${d[1]}</p>
+  <button onclick="book('${d[0]}')">Book Appointment</button>
+ </div>`
+})
+
+function book(name){
+ selectedDoctor=name
+ document.getElementById("modal").style.display="flex"
+}
+
+function go(){
+ window.location.href="register.html?doctor="+encodeURIComponent(selectedDoctor)
+}
+</script>
+
+</body>
+</html>

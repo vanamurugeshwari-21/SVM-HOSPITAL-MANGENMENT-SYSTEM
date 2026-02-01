@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Patient Dashboard | SVM Hospital</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<style>
+:root{
+ --primary:#00ffff;
+ --accent:#4b0082;
+ --bg:#0f0a1a;
+ --card:#1a1433;
+ --text:#f0f0ff;
+ --text-light:#b0a8ff;
+}
+*{margin:0;padding:0;box-sizing:border-box;font-family:Poppins}
+body{display:flex;min-height:100vh;background:var(--bg);color:var(--text)}
+
+.sidebar{
+ width:220px;background:var(--card);
+ display:flex;flex-direction:column;
+ align-items:center;padding-top:20px
+}
+.sidebar img{
+ width:60px;border-radius:50%;
+ border:2px solid var(--primary);margin-bottom:10px
+}
+.sidebar h2{
+ color:var(--primary);
+ font-size:15px;margin-bottom:20px
+}
+.sidebar button{
+ width:90%;padding:12px;margin:4px 0;
+ background:none;border:none;
+ color:var(--text-light);
+ cursor:pointer;border-radius:8px;
+ text-align:left
+}
+.sidebar button.active,.sidebar button:hover{
+ background:rgba(0,255,255,.15);
+ color:var(--primary)
+}
+
+.main{flex:1;padding:25px;overflow-y:auto}
+.tab{display:none}
+.tab.active{display:block}
+
+.grid{
+ display:grid;
+ grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
+ gap:20px
+}
+.card{
+ background:var(--card);
+ padding:20px;border-radius:15px;
+ text-align:center;transition:.2s
+}
+.card:hover{transform:scale(1.05)}
+.card img{
+ width:120px;height:120px;
+ border-radius:50%;
+ border:2px solid var(--primary);
+ object-fit:cover
+}
+.card h3{
+ color:var(--primary);
+ font-size:15px;margin:10px 0
+}
+.card p{color:var(--text-light);font-size:13px}
+
+.btn{
+ background:var(--primary);
+ border:none;padding:8px 18px;
+ border-radius:10px;
+ font-weight:600;cursor:pointer
+}
+.btn:hover{background:var(--accent);color:#fff}
+
+input{
+ width:100%;padding:10px;margin:6px 0;
+ background:#1a1433;
+ border:1px solid var(--text-light);
+ border-radius:8px;color:#fff
+}
+
+table{width:100%;border-collapse:collapse;margin-top:10px}
+th,td{
+ border:1px solid var(--text-light);
+ padding:8px;text-align:center
+}
+th{background:var(--accent)}
+
+.modal{
+ display:none;position:fixed;inset:0;
+ background:rgba(0,0,0,.6);
+ justify-content:center;align-items:center
+}
+.modal-box{
+ background:var(--card);
+ padding:25px;border-radius:18px;
+ width:340px;text-align:center
+}
+.close{cursor:pointer;font-size:20px;text-align:right}
+</style>
+</head>
+
+<body>
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+ <img src="svm hospital logo.png">
+ <h2 id="pname">WELCOME</h2>
+
+ <button class="nav active" data-tab="book"><i class="fa fa-calendar"></i> Book Appointment</button>
+ <button class="nav" data-tab="details"><i class="fa fa-user"></i> My Details</button>
+ <button class="nav" data-tab="apps"><i class="fa fa-list"></i> My Appointments</button>
+ <button class="nav" data-tab="pres"><i class="fa fa-file-medical"></i> Prescriptions</button>
+</div>
+
+<div class="main">
+
+<!-- BOOK -->
+<div id="book" class="tab active">
+ <h2>Select Doctor</h2><br>
+ <div class="grid" id="doctorGrid"></div>
+</div>
+
+<!-- DETAILS -->
+<div id="details" class="tab">
+ <h2>My Details</h2><br>
+ <input id="name" placeholder="Name">
+ <input id="email" placeholder="Email">
+ <input id="gender" placeholder="Gender">
+ <input id="age" placeholder="Age">
+ <input id="height" placeholder="Height (cm)">
+ <input id="weight" placeholder="Weight (kg)">
+ <button class="btn" onclick="saveDetails()">Save Details</button>
+</div>
+
+<!-- APPOINTMENTS -->
+<div id="apps" class="tab">
+ <h2>My Appointments</h2><br>
+ <table>
+  <tr><th>Doctor</th><th>Date</th><th>Time</th></tr>
+  <tbody id="appList"></tbody>
+ </table>
+</div>
+
+<!-- PRESCRIPTIONS -->
+<div id="pres" class="tab">
+ <h2>Prescriptions</h2><br>
+ <table>
+  <tr><th>Doctor</th><th>Date</th><th>Medicines</th></tr>
+  <tbody id="presList"></tbody>
+ </table>
+</div>
+
+</div>
+
+<!-- MODAL -->
+<div class="modal" id="modal">
+ <div class="modal-box">
+  <div class="close" onclick="modal.style.display='none'">×</div>
+  <h3 id="docName"></h3>
+  <input type="date" id="mDate">
+  <input type="time" id="mTime">
+  <button class="btn" onclick="confirmBooking()">Confirm</button>
+ </div>
+</div>
+
+<script>
+const API="http://127.0.0.1:8000";
+
+/* TAB SWITCH */
+document.querySelectorAll(".nav").forEach(b=>{
+ b.onclick=()=>{
+  document.querySelectorAll(".nav,.tab").forEach(x=>x.classList.remove("active"));
+  b.classList.add("active");
+  document.getElementById(b.dataset.tab).classList.add("active");
+ };
+});
+
+/* PATIENT */
+let patient = JSON.parse(localStorage.getItem("currentPatient")) ||
+ {name:"Guest",email:"",gender:"",age:"",height:"",weight:""};
+
+pname.innerText="WELCOME, "+patient.name.toUpperCase();
+["name","email","gender","age","height","weight"].forEach(id=>{
+ document.getElementById(id).value = patient[id] || "";
+});
+
+function saveDetails(){
+ ["name","email","gender","age","height","weight"].forEach(id=>{
+  patient[id]=document.getElementById(id).value;
+ });
+ localStorage.setItem("currentPatient",JSON.stringify(patient));
+ pname.innerText="WELCOME, "+patient.name.toUpperCase();
+ alert("Details Saved ✅");
+}
+
+/* 🔥 DOCTORS – SAME AS ORIGINAL */
+const doctors=[
+ {id:1,name:"Dr. John Anderson",spec:"Cardiology",img:"img1.jpg"},
+ {id:2,name:"Dr. Emma Wilson",spec:"Neurology",img:"img2.jpg"},
+ {id:3,name:"Dr. Michael Roberts",spec:"Orthopedics",img:"img3.jpg"},
+ {id:4,name:"Dr. Olivia Johnson",spec:"Dermatology",img:"img4.jpg"},
+ {id:5,name:"Dr. William Smith",spec:"Pediatrics",img:"img5.jpg"},
+ {id:6,name:"Dr. Sophia Brown",spec:"Gynecology",img:"img6.jpg"},
+ {id:7,name:"Dr. James Davis",spec:"Oncology",img:"img7.jpg"},
+ {id:8,name:"Dr. Isabella Martinez",spec:"Psychiatry",img:"img8.jpg"},
+ {id:9,name:"Dr. Benjamin Lee",spec:"Radiology",img:"img9.jpg"},
+ {id:10,name:"Dr. Mia Taylor",spec:"Gastroenterology",img:"img10.jpg"}
+];
+
+let selectedDoctor=null;
+const grid=document.getElementById("doctorGrid");
+
+doctors.forEach(d=>{
+ const c=document.createElement("div");
+ c.className="card";
+ c.innerHTML=`
+  <img src="${d.img}">
+  <h3>${d.name}</h3>
+  <p>${d.spec}</p>
+  <button class="btn" onclick="openModal(${d.id},'${d.name}')">Book</button>`;
+ grid.appendChild(c);
+});
+
+function openModal(id,name){
+ selectedDoctor=id;
+ docName.innerText=name;
+ modal.style.display="flex";
+}
+
+function confirmBooking(){
+ if(!mDate.value||!mTime.value)return alert("Select date & time");
+
+ fetch(API+"/patients",{
+  method:"POST",
+  headers:{"Content-Type":"application/json"},
+  body:JSON.stringify(patient)
+ })
+ .then(()=>fetch(API+"/patients"))
+ .then(r=>r.json())
+ .then(ps=>{
+  let p=ps.find(x=>x.email===patient.email);
+  return fetch(API+"/appointments",{
+   method:"POST",
+   headers:{"Content-Type":"application/json"},
+   body:JSON.stringify({
+    patient_id:p.id,
+    doctor_id:selectedDoctor,
+    date:mDate.value,
+    time:mTime.value
+   })
+  });
+ })
+ .then(()=>{
+  alert("Appointment Booked ✅");
+  modal.style.display="none";
+  loadAppointments();
+ });
+}
+
+function loadAppointments(){
+ appList.innerHTML="";
+ fetch(API+"/appointments?email="+patient.email)
+ .then(r=>r.json())
+ .then(a=>{
+  if(!a.length){
+   appList.innerHTML="<tr><td colspan='3'>No appointments</td></tr>";
+   return;
+  }
+  a.forEach(x=>{
+   appList.innerHTML+=`<tr><td>${x.doctor}</td><td>${x.date}</td><td>${x.time}</td></tr>`;
+  });
+ });
+}
+
+function loadPrescriptions(){
+ presList.innerHTML="";
+ fetch(API+"/prescriptions")
+ .then(r=>r.json())
+ .then(all=>{
+  let mine=all.filter(p=>p.patient_name===patient.name);
+  if(!mine.length){
+   presList.innerHTML="<tr><td colspan='3'>No prescriptions</td></tr>";
+   return;
+  }
+  mine.forEach(p=>{
+   let meds=JSON.parse(p.medicines)
+    .map(m=>`${m.name} (${m.dosage})`).join(", ");
+   presList.innerHTML+=`
+    <tr>
+     <td>${p.doctor_name}</td>
+     <td>${p.created_at.split(" ")[0]}</td>
+     <td>${meds}</td>
+    </tr>`;
+  });
+ });
+}
+
+loadAppointments();
+loadPrescriptions();
+</script>
+
+</body>
+</html>

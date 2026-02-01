@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>SVM Hospital | Doctor Login</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--p:#00ffff;--a:#4b0082;--c:#1a1433;--t:#f0f0ff;--tl:#b0a8ff;--g:0 0 15px rgba(0,255,255,.6)}
+*{margin:0;padding:0;box-sizing:border-box;font-family:Poppins}
+body{height:100vh;display:flex;justify-content:center;align-items:center;
+background:linear-gradient(135deg,#0f0a1a,#1b1140);color:var(--t)}
+.login-card{width:400px;padding:30px;background:var(--c);border-radius:16px;
+border:1px solid rgba(57,255,20,.4);box-shadow:0 0 40px rgba(0,0,0,.6)}
+.logo{text-align:center;margin-bottom:15px}
+.logo img{width:60px;height:60px;border-radius:50%;padding:6px;
+background:rgba(255,255,255,.12);border:1px solid rgba(57,255,20,.4);box-shadow:var(--g)}
+h2{text-align:center;margin-bottom:20px;color:var(--p);
+text-shadow:0 0 5px var(--p),0 0 15px var(--p)}
+input,select{width:100%;margin-top:12px;padding:12px;border-radius:8px;
+background:#120c2b;color:#fff;border:1px solid rgba(57,255,20,.3)}
+input[readonly]{background:#1a1433;color:var(--tl)}
+input:focus,select:focus{outline:none;box-shadow:var(--g)}
+button{width:100%;margin-top:20px;padding:12px;border:none;border-radius:30px;
+font-weight:600;cursor:pointer;color:#000;
+background:linear-gradient(90deg,var(--a),var(--p));
+box-shadow:0 0 25px rgba(57,255,20,.8);transition:.3s}
+button:hover{box-shadow:0 0 40px rgba(57,255,20,1)}
+.footer{text-align:center;margin-top:15px;font-size:13px;color:var(--tl)}
+</style>
+</head>
+<body>
+<div class="login-card">
+<div class="logo">
+<img src="svm hospital logo.png" alt="SVM Hospital Logo">
+</div>
+<h2>Doctor Login</h2><select id="name">
+<option value="">Select Doctor Name</option>
+</select>
+<input id="specialty" placeholder="Specialty" readonly>
+<input id="email" type="text" placeholder="Enter Email">
+<input id="password" type="password" placeholder="Enter Password">
+<button onclick="loginDoctor()">Login</button>
+<div class="footer">© 2026 SVM Hospital</div>
+</div>
+<script>
+const doctors=[
+{name:"Dr. John Anderson",spec:"Cardiology"},
+{name:"Dr. Emma Wilson",spec:"Neurology"},
+{name:"Dr. Michael Roberts",spec:"Orthopedics"},
+{name:"Dr. Olivia Johnson",spec:"Dermatology"},
+{name:"Dr. William Smith",spec:"Pediatrics"},
+{name:"Dr. Sophia Brown",spec:"Gynecology"},
+{name:"Dr. James Davis",spec:"Oncology"},
+{name:"Dr. Isabella Martinez",spec:"Psychiatry"},
+{name:"Dr. Benjamin Lee",spec:"Radiology"},
+{name:"Dr. Mia Taylor",spec:"Gastroenterology"}
+];
+const PASSWORD="svmhospital123";
+const nameSel=document.getElementById("name");
+const specInp=document.getElementById("specialty");
+doctors.forEach(d=>{nameSel.innerHTML+=`<option value="${d.name}">${d.name}</option>`;});
+nameSel.onchange=()=>{const d=doctors.find(x=>x.name===nameSel.value);
+specInp.value=d?d.spec:"";};function loginDoctor(){
+const email=document.getElementById("email").value.trim();
+const pass=document.getElementById("password").value.trim();
+if(!nameSel.value||!email||!pass)
+return alert("Please fill all fields");
+if(!email.includes("@"))
+return alert("Wrong Email ❌");
+if(pass!==PASSWORD)
+return alert("Wrong Password ❌");
+localStorage.setItem("doctor",JSON.stringify({
+name:nameSel.value,
+specialty:specInp.value,email}));
+window.location.href="doctor_dashboard.html";
+}
+</script>
+</body>
+</html>

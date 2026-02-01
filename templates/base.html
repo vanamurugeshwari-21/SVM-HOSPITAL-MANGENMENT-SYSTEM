@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SVM Hospital - Home</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" 
+integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" 
+crossorigin="anonymous" referrerpolicy="no-referrer" />
+<link rel="stylesheet" href="common.css">
+<style>
+/* Page-specific styles */
+.brand { display: flex; align-items: center; gap: 14px; }
+.logo-small { width: 50px; height: auto; border-radius: 50%; object-fit: contain; background: rgba(255,255,255,0.12); padding: 5px; border: 1px solid rgba(0,255,255,0.3); }
+.brand-text { font-size: 1.8rem; font-weight: 800; letter-spacing: 1px; background: linear-gradient(90deg, var(--primary), #d8b4ff); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: transparent; }
+
+/* Navigation */
+nav ul { list-style: none; display: flex; gap: 2.5rem; margin: 0; padding: 0; }
+nav ul li a { text-decoration: none; color: white; font-size: 1.1rem; font-weight: 500; opacity: 0.9; transition: opacity 0.3s; }
+nav ul li a:hover { opacity: 1; }
+
+/* Auth Buttons */
+.auth-buttons { display: flex; gap: 1rem; flex-wrap: wrap; }
+
+/* Hero Specific */
+.hero h1 { font-size: 3.5rem; margin-bottom: 1rem; text-shadow: var(--glow); }
+.hero p { font-size: 1.4rem; max-width: 900px; margin: 0 auto 1.5rem; opacity: 0.95; }
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">
+    <img class="logo-small" src="svm hospital logo.png" alt="SVM Logo">
+    <div class="brand-text">SVM HOSPITAL</div>
+  </div>
+  <nav>
+    <ul>
+      <li><a href="#about">About</a></li>
+      <li><a href="#services">Services</a></li>
+      <li><a href="doctors.html">Doctor</a></li>
+    </ul>
+  </nav>
+  <div class="auth-buttons">
+    <a href="register.html" class="btn btn-login">Patient Login</a>
+    <a href="doctor_login.html" class="btn btn-login">Doctor Login</a>
+     <a href="admin_login.html" class="btn btn-login">Admin Login</a>
+  </div>
+</header>
+<section class="hero">
+    <h1>Welcome To SVM HOSPITAL</h1>
+    <p>Your Health, Our Priority – Advanced Care with Compassion</p>
+    <p>At SVM Hospitals, we combine state-of-the-art medical technology with a patient-centered approach to deliver exceptional healthcare.</p>
+    <p><strong>Emergency:</strong> +880128374613</p>
+</section>
+
+<section id="about" class="section">
+  <h2>About Us</h2>
+  <p>Established with a vision to provide accessible and advanced healthcare, SVM Hospitals offers modern diagnostics, expert doctors, and 24/7 emergency services. We prioritize patient comfort, safety, and quick recovery.</p>
+  <div class="content-grid">
+    <div class="content-card">
+      <img src="about1.webp" alt="Spacious reception">
+      <h3>Welcoming Environment</h3>
+      <p>Modern and calm reception for a positive patient experience.</p>
+    </div>
+    <div class="content-card">
+      <img src="about2.webp" alt="Reception interior">
+      <h3>Patient-Centered Design</h3>
+      <p>Serene and inviting spaces to ensure comfort.</p>
+    </div>
+  </div>
+  <p><strong>Key Highlights:</strong></p>
+  <ul>
+    <li>Over 15 years of excellence in healthcare</li>
+    <li>Multi-specialty departments including Cardiology, Neurology, Orthopedics</li>
+    <li>Advanced diagnostics and laboratory services</li>
+    <li>Online patient dashboard and appointment system</li>
+    <li>24/7 emergency and Trauma care</li>
+  </ul>
+</section>
+
+<section id="services" class="section">
+  <h2>Our Services</h2>
+  <p>We offer a wide range of medical services tailored to your needs.</p>
+  <div class="content-grid">
+    <div class="content-card">
+      <img src="services1.jpg" alt="Consultation">
+      <h3>Expert Consultations</h3>
+      <p>Consult with experienced specialists for accurate diagnosis.</p>
+    </div>
+    <div class="content-card">
+      <img src="services2.jpg" alt="Care">
+      <h3>Compassionate Care</h3>
+      <p>Holistic approach focused on patient well-being.</p>
+    </div>
+    <div class="content-card">
+      <img src="services3.jpg" alt="Diagnostics">
+      <h3>Advanced Diagnostics</h3>
+      <p>Modern equipment for accurate and fast results.</p>
+    </div>
+    <div class="content-card">
+      <img src="services4.jpg" alt="Equipment">
+      <h3>Modern Equipment</h3>
+      <p>State-of-the-art medical technology.</p>
+    </div>
+    <div class="content-card">
+      <img src="services5.jpg" alt="Emergency">
+      <h3>24/7 Emergency Care</h3>
+      <p>Immediate response for critical conditions.</p>
+    </div>
+    <div class="content-card">
+      <img src="services6.jpg" alt="Service">
+      <h3>Round-the-Clock Service</h3>
+      <p>Dedicated emergency and support staff.</p>
+    </div>
+  </div>
+  <p>Online features include appointment booking, doctor chat, prescription access, and patient health records.</p>
+</section>
+
+<footer style="text-align: center; padding: 20px 0;">
+  <p><strong>Address:</strong> Greams Road, Chennai, Tamil Nadu</p>
+  <p><strong>Phone:</strong> +880128374613</p>
+  <p><strong>Email:</strong> info@svmhospitals.com</p>
+  
+  <div class="footer-links" style="margin: 15px 0;">
+      <a href="base.html">Privacy Policy</a> | 
+      <a href="base.html">Terms of Service</a> | 
+      <a href="base.html">Contact</a> | 
+      <a href="base.html">About</a>
+  </div>
+  <p style="margin-top: 15px;">© 2025 SVM Hospitals. All rights reserved.</p>
+</footer>
+</body>
+</html>

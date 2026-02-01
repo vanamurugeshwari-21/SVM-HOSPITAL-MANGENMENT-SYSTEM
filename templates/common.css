@@ -1,0 +1,176 @@
+/* Common CSS for SVM Hospital Website */
+
+/* Global Variables */
+:root {
+    --primary: #00ffff;
+    --accent: #4b0082;
+    --bg: #0f0a1a;
+    --card: #1a1433;
+    --text: #f0f0ff;
+    --text-light: #b0a8ff;
+    --glow: 0 0 15px rgba(0,255,255,0.6);
+  }
+  
+  /* Reset and Body */
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+  }
+  
+  /* Common Elements */
+  .section { padding: 100px 40px; text-align: center; }
+  .section h2 { font-size: 2.8rem; color: var(--primary); margin-bottom: 2rem; text-shadow: var(--glow); }
+  .section p { max-width: 900px; margin: 0 auto 2rem; font-size: 1.2rem; color: var(--text-light); }
+  
+  .content-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 2rem;
+    max-width: 1300px;
+    margin: 3rem auto;
+  }
+  
+  .content-card {
+    background: var(--card);
+    padding: 2rem;
+    border-radius: 16px;
+    box-shadow: 0 8px 25px rgba(75,0,130,0.3);
+    transition: all 0.35s ease;
+    border: 1px solid rgba(75,0,130,0.4);
+  }
+  
+  .content-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 20px 40px rgba(0,255,255,0.25);
+    border-color: rgba(0,255,255,0.6);
+  }
+  
+  .content-card img { width: 100%; height: auto; border-radius: 8px; }
+  
+  /* Buttons */
+  .btn {
+    padding: 0.8rem 1.8rem;
+    border-radius: 30px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(75,0,130,0.4);
+    text-align: center;
+  }
+  
+  .btn-login {
+    background: linear-gradient(90deg, var(--accent), #00c0c0);
+    color: white;
+    border: none;
+  }
+  
+  .btn-login:hover {
+    background: linear-gradient(90deg, var(--primary), var(--accent));
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(0,255,255,0.55);
+  }
+  
+  /* Cards */
+  .card {
+    background-color: var(--card);
+    padding: 20px;
+    border-radius: 15px;
+    flex: 1;
+    min-width: 200px;
+    text-align: center;
+    box-shadow: var(--glow);
+  }
+  
+  .card h3 { color: var(--primary); margin-bottom: 10px; }
+  .card p { color: var(--text-light); font-size: 1.1rem; font-weight: 600; }
+  
+  /* Tables */
+  table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+  table th, table td { border: 1px solid var(--text-light); padding: 10px; text-align: left; }
+  table th { background: var(--accent); color: #fff; }
+  table tr:hover { background: rgba(0,255,255,0.1); }
+  
+  /* Modals */
+  .modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.85);
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+  }
+  
+  .modal-content {
+    background: var(--card);
+    padding: 25px;
+    border-radius: 15px;
+    width: 90%;
+    max-width: 400px;
+    text-align: center;
+  }
+  
+  /* Doctor Cards */
+  .doctor-card {
+    background: var(--card);
+    border-radius: 15px;
+    padding: 20px;
+    text-align: center;
+    transition: transform 0.3s, box-shadow 0.3s;
+    border: 1px solid rgba(75,0,130,0.4);
+  }
+  
+  .doctor-card:hover { transform: translateY(-3px); box-shadow: var(--glow); }
+  .doctor-card img { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; margin-bottom: 10px; border: 2px solid var(--primary); }
+  .doctor-card h4 { color: var(--primary); margin-bottom: 5px; font-size: 1rem; }
+  .doctor-card p { color: var(--text-light); margin-bottom: 10px; font-size: 0.9rem; }
+  
+  /* Inputs and Selects */
+  input, select {
+    width: 100%;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid var(--text-light);
+    background: #1a1433;
+    color: #fff;
+    outline: none;
+  }
+  
+  input:focus, select:focus { border-color: var(--primary); box-shadow: var(--glow); }
+  
+  /* Sidebar */
+  .sidebar {
+    width: 240px;
+    background: var(--card);
+    padding-top: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    min-height: 100vh;
+  }
+  
+  /* Hero and Header (from base.html) */
+  header {
+    background: linear-gradient(135deg, var(--accent), #6b00b3, var(--primary));
+    padding: 1.2rem 3rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 6px 25px rgba(75,0,130,0.6);
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+  
+  .hero {
+    background: linear-gradient(rgba(75,0,130,0.75), rgba(0,255,255,0.75)),
+      url('https://i.ytimg.com/vi/gs6rXGMpaRc/maxresdefault.jpg') center/cover no-repeat;
+    color: white;
+    text-align: center;
+    padding: 140px 20px;
+    position: relative;
+  }
+  
+  /* Add more common styles as needed... */

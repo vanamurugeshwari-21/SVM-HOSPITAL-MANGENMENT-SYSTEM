@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Prescription | SVM Hospital</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+:root{
+ --neon:#00ffff;
+ --violet:#7b5cff;
+ --bg:#0f0a1a;
+ --card:#1a1433;
+ --text:#f0f0ff;
+ --muted:#b0a8ff;
+}
+*{box-sizing:border-box;font-family:Poppins}
+body{
+ margin:0;padding:20px;
+ background:radial-gradient(circle at top,var(--violet),var(--bg));
+ color:var(--text);
+}
+.paper{
+ max-width:850px;margin:auto;
+ background:linear-gradient(180deg,#1a1433,#0f0a1a);
+ padding:30px;border-radius:18px;
+ box-shadow:0 0 25px rgba(0,255,255,.15);
+ border:1px solid rgba(0,255,255,.3);
+}
+.header{
+ display:flex;gap:15px;align-items:center;
+ border-bottom:1px solid rgba(0,255,255,.4);
+ padding-bottom:15px;margin-bottom:20px;
+}
+.logo{width:70px;height:70px;border-radius:50%;border:2px solid var(--neon)}
+.hospital h2{margin:0;color:var(--neon)}
+.hospital p{margin:0;color:var(--muted)}
+.section{
+ display:grid;grid-template-columns:150px 1fr;
+ gap:10px;margin-bottom:14px;
+}
+.label{color:var(--neon);font-weight:600}
+.field,.field input{
+ background:#241d44;color:#fff;
+ border:1px solid rgba(0,255,255,.3);
+ padding:8px 12px;border-radius:8px;width:100%;
+}
+table{width:100%;border-collapse:collapse;margin-top:12px}
+th{
+ background:rgba(0,255,255,.15);
+ color:var(--neon);
+ padding:10px;border:1px solid rgba(0,255,255,.4)
+}
+td{
+ padding:8px;border:1px solid rgba(0,255,255,.25);text-align:center
+}
+select,input{
+ background:#0f0a1a;color:#fff;
+ border:1px solid rgba(0,255,255,.4);
+ padding:6px;border-radius:6px;width:100%;
+}
+.actions{display:flex;gap:12px;margin-top:18px}
+button{
+ padding:10px 18px;border-radius:10px;
+ font-weight:600;cursor:pointer;border:none
+}
+.add{background:transparent;color:var(--neon);border:1px solid var(--neon)}
+.save{background:var(--neon);color:#000}
+.back{
+ margin-left:auto;background:transparent;
+ color:#ff8a80;border:1px solid #ff8a80
+}
+</style>
+</head>
+<body>
+
+<div class="paper">
+
+<div class="header">
+ <img src="svm hospital logo.png" class="logo">
+ <div class="hospital">
+  <h2>SVM HOSPITAL</h2>
+  <p>Advanced Digital Prescription</p>
+ </div>
+</div>
+
+<div class="section">
+ <div class="label">Doctor</div>
+ <div class="field" id="doctorName"></div>
+</div>
+
+<div class="section">
+ <div class="label">Patient</div>
+ <div class="field" id="patientName"></div>
+</div>
+
+<div class="section">
+ <div class="label">Date</div>
+ <div class="field" id="presDate"></div>
+</div>
+
+<!-- AUTO UPDATED VITALS -->
+<div class="section">
+ <div class="label">Age</div>
+ <div class="field"><input id="age" type="number"></div>
+</div>
+
+<div class="section">
+ <div class="label">Height (cm)</div>
+ <div class="field"><input id="height" type="number"></div>
+</div>
+
+<div class="section">
+ <div class="label">Weight (kg)</div>
+ <div class="field"><input id="weight" type="number"></div>
+</div>
+
+<div class="section" style="grid-template-columns:1fr">
+ <div class="label">Medicines</div>
+
+ <table>
+  <thead>
+   <tr><th>Medicine</th><th>Dosage</th><th>Days</th></tr>
+  </thead>
+  <tbody id="meds"></tbody>
+ </table>
+
+ <div class="actions">
+  <button class="add" onclick="addMed()">＋ ADD</button>
+  <button class="save" onclick="savePrescription()">SAVE</button>
+  <button class="back" onclick="history.back()">⬅ BACK</button>
+ </div>
+</div>
+
+</div>
+
+<script>
+const API="http://127.0.0.1:8000";
+
+const medicineList = [
+ "Paracetamol","Ibuprofen","Amoxicillin","Cefixime","Azithromycin",
+ "Metformin","Omeprazole","Pantoprazole","Aspirin","Diclofenac",
+ "Cetirizine","Vitamin C","Vitamin D3","Zinc","Calcium","Losartan",
+ "Amlodipine","Atorvastatin","Ondansetron","ORS","Salbutamol",
+ "Budesonide","Norfloxacin","Dolo 650","Crocin","Calpol",
+ "Levocetirizine","Montelukast","Insulin","Telmisartan",
+ "Enalapril","Rosuvastatin","Clopidogrel","Domperidone",
+ "Loperamide","Iron Tablets","Paracip","Cough Syrup","Hydroxychloroquine"
+];
+
+let patient = JSON.parse(localStorage.getItem("currentPatient")) || {name:"Guest", age:"", height:"", weight:""};
+let doctor = JSON.parse(localStorage.getItem("doctor")) || {name:"Dr. Admin"};
+
+doctorName.innerText = doctor.name;
+patientName.innerText = patient.name;
+presDate.innerText = new Date().toLocaleDateString();
+
+age.value = patient.age || "";
+height.value = patient.height || "";
+weight.value = patient.weight || "";
+
+["age","height","weight"].forEach(id=>{
+  document.getElementById(id).addEventListener("input",()=>{
+    patient[id] = document.getElementById(id).value;
+    localStorage.setItem("currentPatient",JSON.stringify(patient));
+  });
+});
+
+function addMed(){
+  const tr = document.createElement("tr");
+  tr.innerHTML = `<td>
+      <select>
+        <option value="">Select</option>
+        ${medicineList.map(m=>`<option value="${m}">${m}</option>`).join("")}
+      </select>
+    </td>
+    <td><input placeholder="1-0-1"></td>
+    <td><input type="number"></td>`;
+  meds.appendChild(tr);
+}
+
+function savePrescription(){
+  const medicines = [...meds.children].map(r=>{
+    const name = r.querySelector("select").value;
+    const dosage = r.querySelectorAll("input")[0].value;
+    const days = r.querySelectorAll("input")[1].value;
+    return name && dosage && days ? {name,dosage,days} : null;
+  }).filter(Boolean);
+
+  if(!medicines.length){ alert("Add medicines"); return; }
+
+  fetch(API+"/prescriptions",{
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({
+      doctorName:doctor.name,
+      patientName:patient.name,
+      age:patient.age,
+      height:patient.height,
+      weight:patient.weight,
+      medicines:JSON.stringify(medicines)
+    })
+  })
+  .then(r=>r.json())
+  .then(res=>{
+    alert("Prescription Saved ✅");
+    meds.innerHTML="";
+  });
+}
+</script>
+
+</body>
+</html>

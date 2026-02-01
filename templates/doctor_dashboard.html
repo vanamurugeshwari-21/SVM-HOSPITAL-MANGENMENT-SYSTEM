@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Doctor Dashboard | SVM Hospital</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<style>
+:root {
+  --primary: #00ffff;
+  --accent: #4b0082;
+  --bg: #0f0a1a;
+  --card: #1a1433;
+  --text: #f0f0ff;
+  --text-light: #b0a8ff;
+}
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif;}
+body{display:flex;min-height:100vh;background:var(--bg);color:var(--text);}
+.sidebar{width:220px;background:var(--card);display:flex;flex-direction:column;align-items:center;padding-top:20px;position:sticky;top:0;min-height:100vh;}
+.sidebar header{text-align:center;margin-bottom:30px;}
+.sidebar header img{width:60px;height:60px;border-radius:50%;margin-bottom:10px;border:2px solid var(--primary);}
+.sidebar header h1{font-size:1.3rem;color:var(--primary);}
+.sidebar button, .sidebar a{width:90%;background:none;border:none;color:var(--text-light);padding:12px 15px;text-align:left;cursor:pointer;font-weight:600;display:flex;align-items:center;gap:10px;border-radius:8px;transition:0.3s;font-size:1rem;text-decoration:none;}
+.sidebar button i, .sidebar a i{width:20px;text-align:center;}
+.sidebar button.active,.sidebar button:hover, .sidebar a:hover{color:var(--primary);background:rgba(0,255,255,0.1);}
+.main-content{flex:1;padding:25px;overflow-y:auto;}
+.tab-content{display:none;}
+.tab-content.active{display:block;}
+h2{color:var(--primary);margin-bottom:15px;text-align:center;}
+table{width:100%;border-collapse:collapse;margin-top:10px;}
+table th,table td{border:1px solid var(--text-light);padding:8px;text-align:left;vertical-align:middle;}
+table th{background:var(--accent);color:#fff;}
+.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);align-items:center;justify-content:center;z-index:100;}
+.modal-content{background:var(--card);padding:25px;border-radius:15px;width:90%;max-width:400px;text-align:center;}
+.modal-content h2{color:var(--primary);margin-bottom:15px;}
+.modal-content input{width:100%;padding:10px;margin-bottom:12px;border-radius:8px;border:1px solid var(--text-light);background:#1a1433;color:#fff;}
+.modal-content button{width:100%;padding:10px;border:none;border-radius:10px;background:var(--primary);font-weight:600;cursor:pointer;margin-top:10px;}
+</style>
+</head>
+<body>
+
+<!-- Sidebar -->
+<div class="sidebar">
+  <header>
+    <img src="svm hospital logo.png" alt="Hospital Logo">
+    <h1 id="sidebarName">Welcome, Doctor</h1>
+  </header>
+  <button class="tab-btn active" data-tab="myAppointments"><i class="fas fa-list"></i> My Appointments</button>
+  <button class="tab-btn" data-tab="patients"><i class="fas fa-user-injured"></i> Patients</button>
+  <a href="prescription.html"><i class="fas fa-file-medical"></i> Add Prescription</a>
+</div>
+
+<!-- Main Content -->
+<div class="main-content">
+
+  <!-- My Appointments -->
+  <section id="myAppointments" class="tab-content active">
+    <h2>My Appointments</h2>
+    <table>
+      <thead>
+        <tr><th>Patient</th><th>Date</th><th>Time</th></tr>
+      </thead>
+      <tbody id="appointmentList">
+        <tr><td colspan="3">Loading...</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- Patients -->
+  <section id="patients" class="tab-content">
+    <h2>Patients</h2>
+    <table>
+      <thead>
+        <tr><th>Name</th><th>Email</th><th>Age</th><th>Gender</th><th>Height</th><th>Weight</th></tr>
+      </thead>
+      <tbody id="patientList">
+        <tr><td colspan="6">Loading...</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+</div>
+
+<!-- Login Modal -->
+<div class="modal" id="loginModal">
+  <div class="modal-content">
+    <h2>Doctor Login</h2>
+    <input type="text" id="loginName" placeholder="Enter your name">
+    <button onclick="loginDoctor()">Login</button>
+  </div>
+</div>
+
+<script>
+const API = "http://127.0.0.1:8000";
+
+// Tabs switching
+const tabs = document.querySelectorAll('.tab-btn');
+const tabContents = document.querySelectorAll('.tab-content');
+tabs.forEach(tab => {
+  tab.addEventListener('click', () => {
+    tabs.forEach(t => t.classList.remove('active'));
+    tabContents.forEach(tc => tc.classList.remove('active'));
+    tab.classList.add('active');
+    document.getElementById(tab.dataset.tab).classList.add('active');
+  });
+});
+
+// Doctor session
+let doctor = JSON.parse(localStorage.getItem("doctor")) || null;
+
+if (!doctor) {
+  document.getElementById("loginModal").style.display = 'flex';
+} else {
+  document.getElementById("sidebarName").textContent = `Welcome, ${doctor.name}`;
+  loadAppointments();
+  loadPatients();
+}
+
+function loginDoctor() {
+  const name = document.getElementById("loginName").value.trim();
+  if (!name) {
+    alert("Please enter your name");
+    return;
+  }
+  doctor = { name };
+  localStorage.setItem("doctor", JSON.stringify(doctor));
+  document.getElementById("loginModal").style.display = 'none';
+  document.getElementById("sidebarName").textContent = `Welcome, ${doctor.name}`;
+  loadAppointments();
+  loadPatients();
+}
+
+// Load Appointments
+function loadAppointments() {
+  const tbody = document.getElementById('appointmentList');
+  tbody.innerHTML = '<tr><td colspan="3">Loading...</td></tr>';
+
+  fetch(`${API}/appointments?doctor=${encodeURIComponent(doctor.name)}`)
+    .then(r => r.json())
+    .then(data => {
+      tbody.innerHTML = '';
+      if (!data.length) {
+        tbody.innerHTML = '<tr><td colspan="3">No appointments found</td></tr>';
+        return;
+      }
+      data.forEach(ap => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${ap.patient || 'Unknown'}</td>
+          <td>${ap.date || '-'}</td>
+          <td>${ap.time || '-'}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    })
+    .catch(err => {
+      console.error(err);
+      tbody.innerHTML = '<tr><td colspan="3">Error loading appointments</td></tr>';
+    });
+}
+
+// Load Patients (who have appointment with this doctor)
+function loadPatients() {
+  const tbody = document.getElementById('patientList');
+  tbody.innerHTML = '<tr><td colspan="6">Loading...</td></tr>';
+
+  // Step 1: Get appointments → get patient_ids
+  fetch(`${API}/appointments?doctor=${encodeURIComponent(doctor.name)}`)
+    .then(r => r.json())
+    .then(appointments => {
+      if (!appointments.length) {
+        tbody.innerHTML = '<tr><td colspan="6">No patients yet</td></tr>';
+        return;
+      }
+
+      const patientIds = [...new Set(appointments.map(a => a.patient_id))];
+
+      // Step 2: Get patient details
+      fetch(`${API}/patients`)
+        .then(r => r.json())
+        .then(allPatients => {
+          tbody.innerHTML = '';
+          const myPatients = allPatients.filter(p => patientIds.includes(p.id));
+
+          if (!myPatients.length) {
+            tbody.innerHTML = '<tr><td colspan="6">Patient details not found</td></tr>';
+            return;
+          }
+
+          myPatients.forEach(p => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+              <td>${p.name || '-'}</td>
+              <td>${p.email || '-'}</td>
+              <td>${p.age || '-'}</td>
+              <td>${p.gender || '-'}</td>
+              <td>${p.height ? p.height + ' cm' : '-'}</td>
+              <td>${p.weight ? p.weight + ' kg' : '-'}</td>
+            `;
+            tbody.appendChild(tr);
+          });
+        })
+        .catch(err => {
+          console.error(err);
+          tbody.innerHTML = '<tr><td colspan="6">Error loading patients</td></tr>';
+        });
+    })
+    .catch(err => {
+      console.error(err);
+      tbody.innerHTML = '<tr><td colspan="6">Error loading data</td></tr>';
+    });
+}
+
+// Close modal when clicking outside
+window.onclick = function(event) {
+  const modal = document.getElementById('loginModal');
+  if (event.target === modal) {
+    modal.style.display = "none";
+  }
+};
+</script>
+
+</body>
+</html>
